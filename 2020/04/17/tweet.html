@@ -1,0 +1,870 @@
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>['2020-04-17-tweet.ipynb',
+ '.DS_Store',
+ '2020-04-08-trial-fastpages.ipynb',
+ 'code.ipynb',
+ 'test.csv',
+ 'README.md',
+ '2020-02-20-test.ipynb',
+ 'train.csv',
+ '.ipynb_checkpoints',
+ 'my_icons']
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="n">sns</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mf">12.47</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>12.47
+</code></pre></div></div>
+
+<h1 id="data">Data</h1>
+
+<blockquote>
+  <p>Twitter has become an important communication channel in times of emergency.
+The ubiquitousness of smartphones enables people to announce an emergency they’re observing in real-time. Because of this, more agencies are interested in programatically monitoring Twitter (i.e. disaster relief organizations and news agencies). Soure: https://www.kaggle.com/c/nlp-getting-started/overview</p>
+</blockquote>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">'train.csv'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>keyword</th>
+      <th>location</th>
+      <th>text</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>1</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Our Deeds are the Reason of this #earthquake M...</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>4</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Forest fire near La Ronge Sask. Canada</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>5</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>All residents asked to 'shelter in place' are ...</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>6</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>13,000 people receive #wildfires evacuation or...</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>7</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Just got sent this photo from Ruby #Alaska as ...</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">[</span><span class="s">'target'</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0    4342
+1    3271
+Name: target, dtype: int64
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="s">'Normal Tweet'</span><span class="p">,</span> <span class="s">'Disaster Tweet'</span><span class="p">],</span>
+           <span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s">'target'</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">'Tweet Distribution'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Text(0.5, 1.0, 'Tweet Distribution')
+</code></pre></div></div>
+
+<p><img src="output_7_1.png" alt="png" /></p>
+
+<h1 id="model">Model</h1>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">fastai2.text.all</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">nbdev.showdoc</span> <span class="kn">import</span> <span class="o">*</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+ModuleNotFoundError                       Traceback (most recent call last)
+
+&lt;ipython-input-62-5ca7fe234680&gt; in &lt;module&gt;
+----&gt; 1 from fastai2.text.all import *
+      2 from nbdev.showdoc import *
+
+
+ModuleNotFoundError: No module named 'fastai2'
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">()</span>
+<span class="n">path</span><span class="o">.</span><span class="n">ls</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-63-88e21b776b5f&gt; in &lt;module&gt;
+----&gt; 1 path = Path()
+      2 path.ls()
+
+
+NameError: name 'Path' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>keyword</th>
+      <th>location</th>
+      <th>text</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>1</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Our Deeds are the Reason of this #earthquake M...</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>4</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Forest fire near La Ronge Sask. Canada</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>5</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>All residents asked to 'shelter in place' are ...</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>6</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>13,000 people receive #wildfires evacuation or...</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>7</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Just got sent this photo from Ruby #Alaska as ...</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="o">.</span><span class="n">shape</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(7613, 5)
+</code></pre></div></div>
+
+<p>Let’s shuffle the data and set 20% of the data for model validation</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">frac</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">*</span><span class="mf">0.8</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>6090.400000000001
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">[</span><span class="s">'is_valid'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="o">*</span><span class="mf">0.8</span><span class="p">),</span><span class="s">'is_valid'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">[</span><span class="s">'is_valid'</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>True     6091
+False    1522
+Name: is_valid, dtype: int64
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="p">[</span><span class="s">'text'</span><span class="p">][</span><span class="mi">5000</span><span class="p">]</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>'Refugio oil spill may have been costlier bigger than projected http://t.co/zdtcw9Fsx1'
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dbunch_lm</span> <span class="o">=</span> <span class="n">TextDataLoaders</span><span class="o">.</span><span class="n">from_df</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">text_col</span><span class="o">=</span><span class="s">'text'</span><span class="p">,</span> 
+                                    <span class="n">label_col</span><span class="o">=</span><span class="s">'target'</span><span class="p">,</span> 
+                                    <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">is_lm</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                    <span class="n">valid_col</span><span class="o">=</span><span class="s">'is_valid'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-72-6c34e45a6289&gt; in &lt;module&gt;
+----&gt; 1 dbunch_lm = TextDataLoaders.from_df(df, text_col='text', 
+      2                                     label_col='target',
+      3                                     path=path, is_lm=True,
+      4                                     valid_col='is_valid')
+
+
+NameError: name 'TextDataLoaders' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dbunch_lm</span><span class="o">.</span><span class="n">train_ds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-73-29276bc2ebce&gt; in &lt;module&gt;
+----&gt; 1 dbunch_lm.train_ds[0]
+
+
+NameError: name 'dbunch_lm' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dbunch_lm</span><span class="o">.</span><span class="n">vocab</span><span class="p">[:</span><span class="mi">20</span><span class="p">]</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-74-c0f83e7b9f9b&gt; in &lt;module&gt;
+----&gt; 1 dbunch_lm.vocab[:20]
+
+
+NameError: name 'dbunch_lm' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dbunch_lm</span><span class="o">.</span><span class="n">show_batch</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-75-c51636f720be&gt; in &lt;module&gt;
+----&gt; 1 dbunch_lm.show_batch()
+
+
+NameError: name 'dbunch_lm' is not defined
+</code></pre></div></div>
+
+<h1 id="language-model">Language model</h1>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">bs</span> <span class="o">=</span> <span class="mi">32</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">path</span><span class="o">.</span><span class="n">ls</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-77-4e20bcf9cc48&gt; in &lt;module&gt;
+----&gt; 1 path.ls()
+
+
+NameError: name 'path' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">len</span><span class="p">(</span><span class="n">dbunch_lm</span><span class="o">.</span><span class="n">vocab</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-78-3ddbb33b83a6&gt; in &lt;module&gt;
+----&gt; 1 len(dbunch_lm.vocab)
+
+
+NameError: name 'dbunch_lm' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">learn</span> <span class="o">=</span> <span class="n">language_model_learner</span><span class="p">(</span><span class="n">dbunch_lm</span><span class="p">,</span> <span class="n">AWD_LSTM</span><span class="p">,</span> <span class="n">drop_mult</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> 
+                               <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">accuracy</span><span class="p">,</span> <span class="n">Perplexity</span><span class="p">()])</span><span class="o">.</span><span class="n">to_fp16</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-79-05e880bca9a8&gt; in &lt;module&gt;
+----&gt; 1 learn = language_model_learner(dbunch_lm, AWD_LSTM, drop_mult=0.3, 
+      2                                metrics=[accuracy, Perplexity()]).to_fp16()
+
+
+NameError: name 'language_model_learner' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">learn</span><span class="o">.</span><span class="n">lr_find</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-80-d81c6bd29d71&gt; in &lt;module&gt;
+----&gt; 1 learn.lr_find()
+
+
+NameError: name 'learn' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1e-2</span><span class="p">,</span> <span class="n">moms</span><span class="o">=</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span><span class="mf">0.7</span><span class="p">,</span><span class="mf">0.8</span><span class="p">))</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">learn</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">'fit_head'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-81-2cfc6c464230&gt; in &lt;module&gt;
+----&gt; 1 learn.save('fit_head')
+
+
+NameError: name 'learn' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">learn</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">'fit_head'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-82-1ff90cae0b4c&gt; in &lt;module&gt;
+----&gt; 1 learn.load('fit_head');
+
+
+NameError: name 'learn' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">learn</span><span class="o">.</span><span class="n">unfreeze</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">2e-2</span><span class="p">,</span> <span class="n">moms</span><span class="o">=</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span><span class="mf">0.7</span><span class="p">,</span><span class="mf">0.8</span><span class="p">))</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-83-6ab537c0c31b&gt; in &lt;module&gt;
+----&gt; 1 learn.fit_one_cycle(10, 2e-2, moms=(0.8,0.7,0.8))
+
+
+NameError: name 'learn' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">learn</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">'fine_tuned'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-84-d06ce8c549d2&gt; in &lt;module&gt;
+----&gt; 1 learn.save('fine_tuned')
+
+
+NameError: name 'learn' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">learn</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">'fine_tuned'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-85-44585e99aeed&gt; in &lt;module&gt;
+----&gt; 1 learn.load('fine_tuned');
+
+
+NameError: name 'learn' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">TEXT</span> <span class="o">=</span> <span class="s">'Car accidents'</span>
+<span class="n">N_WORDS</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">N_SENTENCES</span> <span class="o">=</span> <span class="mi">2</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">print</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">learn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">TEXT</span><span class="p">,</span> <span class="n">N_WORDS</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">0.75</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_SENTENCES</span><span class="p">)))</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-86-135dd315cd3b&gt; in &lt;module&gt;
+----&gt; 1 print("\n".join(learn.predict(TEXT, N_WORDS, temperature=0.75) for _ in range(N_SENTENCES)))
+
+
+&lt;ipython-input-86-135dd315cd3b&gt; in &lt;genexpr&gt;(.0)
+----&gt; 1 print("\n".join(learn.predict(TEXT, N_WORDS, temperature=0.75) for _ in range(N_SENTENCES)))
+
+
+NameError: name 'learn' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">learn</span><span class="o">.</span><span class="n">save_encoder</span><span class="p">(</span><span class="s">'fine_tuned_enc'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-87-2eaedba51eb4&gt; in &lt;module&gt;
+----&gt; 1 learn.save_encoder('fine_tuned_enc')
+
+
+NameError: name 'learn' is not defined
+</code></pre></div></div>
+
+<h1 id="classifier">Classifier</h1>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">tweet_class</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="p">(</span><span class="n">TextBlock</span><span class="o">.</span><span class="n">from_df</span><span class="p">(</span><span class="s">'text'</span><span class="p">,</span><span class="n">vocab</span><span class="o">=</span><span class="n">dbunch_lm</span><span class="o">.</span><span class="n">vocab</span><span class="p">),</span><span class="n">CategoryBlock</span><span class="p">),</span>
+                       <span class="n">get_y</span> <span class="o">=</span> <span class="n">ColReader</span><span class="p">(</span><span class="s">'target'</span><span class="p">),</span>
+                       <span class="n">get_x</span> <span class="o">=</span> <span class="n">ColReader</span><span class="p">(</span><span class="s">'text'</span><span class="p">),</span>
+                       <span class="n">splitter</span><span class="o">=</span><span class="n">ColSplitter</span><span class="p">())</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-88-25cae671d553&gt; in &lt;module&gt;
+----&gt; 1 tweet_class = DataBlock(blocks=(TextBlock.from_df('text',vocab=dbunch_lm.vocab),CategoryBlock),
+      2                        get_y = ColReader('target'),
+      3                        get_x = ColReader('text'),
+      4                        splitter=ColSplitter())
+
+
+NameError: name 'DataBlock' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>keyword</th>
+      <th>location</th>
+      <th>text</th>
+      <th>target</th>
+      <th>is_valid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>7183</td>
+      <td>mudslide</td>
+      <td>London, England</td>
+      <td>@new_hart2010 #mudslide... nuff said #GBBO</td>
+      <td>1</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>8110</td>
+      <td>rescued</td>
+      <td>Jammu | Kashmir | Delhi</td>
+      <td>18 bovines rescued 3 smugglersåÊnabbed http://...</td>
+      <td>1</td>
+      <td>True</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">pd</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">'is_valid'</span><span class="p">],</span><span class="n">df</span><span class="p">[</span><span class="s">'target'</span><span class="p">])</span>
+</code></pre></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>target</th>
+      <th>0</th>
+      <th>1</th>
+    </tr>
+    <tr>
+      <th>is_valid</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>False</td>
+      <td>856</td>
+      <td>666</td>
+    </tr>
+    <tr>
+      <td>True</td>
+      <td>3486</td>
+      <td>2605</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dbunch_class</span> <span class="o">=</span> <span class="n">tweet_class</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="n">path</span><span class="p">,</span> <span class="n">bs</span><span class="o">=</span><span class="n">bs</span><span class="p">,</span> <span class="n">seq_len</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-91-f8069766aa6d&gt; in &lt;module&gt;
+----&gt; 1 dbunch_class = tweet_class.dataloaders(df,path, bs=bs, seq_len=80)
+
+
+NameError: name 'tweet_class' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dbunch_class</span><span class="o">.</span><span class="n">show_batch</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-92-0d2390b12d74&gt; in &lt;module&gt;
+----&gt; 1 dbunch_class.show_batch()
+
+
+NameError: name 'dbunch_class' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">learn</span> <span class="o">=</span> <span class="n">text_classifier_learner</span><span class="p">(</span><span class="n">dbunch_class</span><span class="p">,</span> <span class="n">AWD_LSTM</span><span class="p">,</span>
+                                <span class="n">drop_mult</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="n">accuracy</span><span class="p">)</span><span class="o">.</span><span class="n">to_fp16</span><span class="p">()</span>
+<span class="n">learn</span><span class="o">.</span><span class="n">load_encoder</span><span class="p">(</span><span class="s">'fine_tuned_enc'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-93-8f8ee2c94a49&gt; in &lt;module&gt;
+----&gt; 1 learn = text_classifier_learner(dbunch_class, AWD_LSTM,
+      2                                 drop_mult=0.3, metrics=accuracy).to_fp16()
+      3 learn.load_encoder('fine_tuned_enc')
+
+
+NameError: name 'text_classifier_learner' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">learn</span><span class="o">.</span><span class="n">lr_find</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-94-d81c6bd29d71&gt; in &lt;module&gt;
+----&gt; 1 learn.lr_find()
+
+
+NameError: name 'learn' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1e-2</span><span class="p">,</span> <span class="n">moms</span><span class="o">=</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">))</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">learn</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">'first'</span><span class="p">)</span>
+<span class="n">learn</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">'first'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-95-94e0399fd504&gt; in &lt;module&gt;
+----&gt; 1 learn.save('first')
+      2 learn.load('first')
+
+
+NameError: name 'learn' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">learn</span><span class="o">.</span><span class="n">freeze_to</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="nb">slice</span><span class="p">(</span><span class="mf">1e-2</span><span class="o">/</span><span class="p">(</span><span class="mf">2.6</span><span class="o">**</span><span class="mi">4</span><span class="p">),</span><span class="mf">1e-2</span><span class="p">),</span> <span class="n">moms</span><span class="o">=</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">))</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-96-a5639c873429&gt; in &lt;module&gt;
+----&gt; 1 learn.freeze_to(-2)
+      2 learn.fit_one_cycle(5, slice(1e-2/(2.6**4),1e-2), moms=(0.8,0.7, 0.8))
+
+
+NameError: name 'learn' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">learn</span><span class="o">.</span><span class="n">freeze_to</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">slice</span><span class="p">(</span><span class="mf">5e-3</span><span class="o">/</span><span class="p">(</span><span class="mf">2.6</span><span class="o">**</span><span class="mi">4</span><span class="p">),</span><span class="mf">5e-3</span><span class="p">),</span><span class="n">moms</span><span class="o">=</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">))</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">learn</span><span class="o">.</span><span class="n">unfreeze</span><span class="p">()</span>
+<span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">slice</span><span class="p">(</span><span class="mf">1e-3</span><span class="o">/</span><span class="p">(</span><span class="mf">2.6</span><span class="o">**</span><span class="mi">4</span><span class="p">),</span><span class="mf">1e-3</span><span class="p">),</span> <span class="n">moms</span><span class="o">=</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">))</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-97-d9652e467fa8&gt; in &lt;module&gt;
+----&gt; 1 learn.unfreeze()
+      2 learn.fit_one_cycle(2, slice(1e-3/(2.6**4),1e-3), moms=(0.8,0.7, 0.8))
+
+
+NameError: name 'learn' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="nb">slice</span><span class="p">(</span><span class="mf">1e-3</span><span class="o">/</span><span class="p">(</span><span class="mf">2.6</span><span class="o">**</span><span class="mi">4</span><span class="p">),</span><span class="mf">1e-3</span><span class="p">),</span> <span class="n">moms</span><span class="o">=</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">))</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-98-54c844593fc0&gt; in &lt;module&gt;
+----&gt; 1 learn.fit_one_cycle(4,slice(1e-3/(2.6**4),1e-3), moms=(0.8,0.7, 0.8))
+
+
+NameError: name 'learn' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">learn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="s">"there's a fire emergency in my city"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">learn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="s">"What a peaceful place to live"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-99-2dda88c06e0a&gt; in &lt;module&gt;
+----&gt; 1 learn.predict("What a peaceful place to live")
+
+
+NameError: name 'learn' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">learn</span><span class="o">.</span><span class="n">show_results</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-100-c3b657dcc9ae&gt; in &lt;module&gt;
+----&gt; 1 learn.show_results()
+
+
+NameError: name 'learn' is not defined
+</code></pre></div></div>
+
+<h1 id="interpretation">Interpretation</h1>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">fastai.text.interpret</span> <span class="kn">import</span> <span class="o">*</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">interp</span> <span class="o">=</span> <span class="n">ClassificationInterpretation</span><span class="o">.</span><span class="n">from_learner</span><span class="p">(</span><span class="n">learn</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-102-aa7f7b70a42b&gt; in &lt;module&gt;
+----&gt; 1 interp = ClassificationInterpretation.from_learner(learn)
+
+
+NameError: name 'ClassificationInterpretation' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">interp</span><span class="o">.</span><span class="n">confusion_matrix</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-103-f05b1019acb7&gt; in &lt;module&gt;
+----&gt; 1 interp.confusion_matrix()
+
+
+NameError: name 'interp' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">interp</span><span class="o">.</span><span class="n">plot_top_losses</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-104-76c31c34351e&gt; in &lt;module&gt;
+----&gt; 1 interp.plot_top_losses(5)
+
+
+NameError: name 'interp' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">interp</span><span class="o">.</span><span class="n">plot_confusion_matrix</span><span class="p">()</span>
+</code></pre></div></div>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-105-ab4f144f3c10&gt; in &lt;module&gt;
+----&gt; 1 interp.plot_confusion_matrix()
+
+
+NameError: name 'interp' is not defined
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+</code></pre></div></div>
