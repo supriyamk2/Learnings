@@ -7,7 +7,7 @@
 # https://learnxinyminutes.com/docs/yaml/
 
 title: My Learnings - Data Science Blog
-description: Blogging platform with support for Jupyter Notebooks.
+description: My Learnings, where I will be sharing some of my data science learnings, tips and tutorials.
 github_username: supriyamk2
 # you can comment the below line out if your repo name is not different than your baseurl
 github_repo: "Learnings"
